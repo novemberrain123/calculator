@@ -1,0 +1,158 @@
+﻿@model calculator.Models.User
+
+@{
+    ViewData["Title"] = "Calculator";
+}
+
+
+<h1>LHS calculator</h1>
+*New users, please press MC to setup memory function*
+<head>
+    <!-- for styling -->
+    <style>
+        .title {
+            margin-bottom: 10px;
+            text-align: center;
+            width: 200px;
+            color: white;
+            border: solid black 2px;
+        }
+
+        input[type="button"], input[type="submit"] {
+            background-color: lightskyblue;
+            color: black;
+            border: solid black 2px;
+            width: 100%
+        }
+
+        input[type="text"] {
+            background-color: white;
+            border: solid black 2px;
+            width: 100%
+        }
+    </style>
+</head>
+<!-- create table -->
+<body>
+    <table border="1">
+        <tr>
+            <td colspan="4"><input type="text" id="result" /></td>
+            <!-- clr() function will call clr to clear all value -->
+        </tr>
+        <tr>
+            <td>
+                <form asp-action="SaveMem">
+                    <input type="hidden" asp-for="Id" value="@Model.Id" />
+                    <input type="hidden" asp-for="Name" value="@Model.Name" />
+                    <input type="hidden" asp-for="Results" value="@Model.Results" />
+                    <span asp-validation-for="Results" class="text-danger"></span>
+                    <input type="submit" value="M+" onclick="saveMem()" />
+                </form>
+            </td>
+            <td>
+                <input type="button" value="ML" onclick="getMem()" />
+            </td>
+            <td>
+                <form asp-action="ClrMem">
+                    <input type="hidden" asp-for="Id" value="@Model.Id" />
+                    <input type="submit" value="MC" />
+                </form>
+            </td>
+            <td><input type="button" value="c" onclick="clr()" /> </td>
+
+        </tr>
+        <tr>
+            <!-- create button and assign value to each button -->
+            <!-- dis("1") will call function dis to display value -->
+            <td><input type="button" value="7" onclick="dis('7')" /> </td>
+            <td><input type="button" value="8" onclick="dis('8')" /> </td>
+            <td><input type="button" value="9" onclick="dis('9')" /> </td>
+            <td><input type="button" value="/" onclick="dis('/')" /> </td>
+        </tr>
+        <tr>
+            <td><input type="button" value="4" onclick="dis('4')" /> </td>
+            <td><input type="button" value="5" onclick="dis('5')" /> </td>
+            <td><input type="button" value="6" onclick="dis('6')" /> </td>
+            <td><input type="button" value="-" onclick="dis('-')" /> </td>
+        </tr>
+        <tr>
+            <td><input type="button" value="1" onclick="dis('1')" /> </td>
+            <td><input type="button" value="2" onclick="dis('2')" /> </td>
+            <td><input type="button" value="3" onclick="dis('3')" /> </td>
+            <td><input type="button" value="+" onclick="dis('+')" /> </td>
+        </tr>
+        <tr>
+            <td><input type="button" value="." onclick="dis('.')" /> </td>
+            <td><input type="button" value="0" onclick="dis('0')" /> </td>
+            <td><input type="button" value="=" onclick="solve()" /> </td>
+            <td><input type="button" value="*" onclick="dis('*')" /> </td>
+        </tr>
+    </table>
+    <table id="mem" border="1" style="visibility: hidden;"></table>
+    <script>
+
+        //below snippet displays memory
+        var memory = @Html.Raw(Json.Serialize(Model.Results));
+        const mems = memory.toString().split(" ")
+        console.log(mems)
+        for (index = 0, len = mems.length; index < len; ++index) {
+              var y = document.createElement("TR");
+              document.getElementById("mem").appendChild(y);
+
+              var t = document.createElement("TD");
+              var i = document.createElement("input");
+              i.setAttribute('type','button');
+              i.setAttribute('value',mems[index]);
+              i.setAttribute('onclick', 'dis(' + mems[index] +')');
+              t.appendChild(i);
+              y.appendChild(t);
+        }
+
+        //function that display value
+        function dis(val)
+        {
+            document.getElementById("result").value+=val
+        }
+
+        //function that evaluates the digit and return result
+        function solve()
+        {
+            let x = document.getElementById("result").value
+            let y = eval(x)
+            document.getElementById("result").value = y
+        }
+
+        //function that clear the display
+        function clr()
+        {
+            document.getElementById("result").value = ""
+        }
+
+        //function that saves current result to memory
+        function saveMem()
+        {
+
+            let x = document.getElementById("result").value
+            if(x == "" || x == "0"){
+                alert("Result cannot be 0 or empty!")
+                return false;
+            }
+            document.getElementById("Results").value = memory.toString() + " " + x
+            console.log(document.getElementById("Results"))
+        }
+
+        //function that changes memory list to visible/hidden
+        function getMem(){
+            var table = document.getElementById("mem")
+            if (table.style.visibility == "hidden"){
+                table.style.visibility = "visible"
+            } else
+            {
+                table.style.visibility = "hidden"
+            }
+        }
+
+
+    </script>
+
+</body> 
